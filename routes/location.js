@@ -23,6 +23,7 @@ router.get('/:id', (req, res) => {
 /*PUT new Object */
 router.put('/', (req, res) => {
     const newObject = new Object(req.body);
+    console.log(req.body);
     newObject.save(err => {
         if(err) {return res.status(500).send(err)}
         res.status(200).send({message: `Succesfully added ${req.body.creatorName}'s Masterpiece}`})
