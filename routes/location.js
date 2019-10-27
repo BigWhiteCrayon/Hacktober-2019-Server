@@ -11,7 +11,7 @@ const db = mongoose.connection;
 /* GET Objects within ~.5 miles of current */
 router.get('/:id', (req, res) => {
     const { longitude, latitude } = req.body;
-    //should limit to objects within half a mile, kinda big but oh well
+    //should limit to objects within .69 a mile, kinda big but oh well
     Object.where('longitude').gte(longitude - .01).lte(longitude - .01)
     .where('latitude').gte(latitude - .01).lte(latitude - .01)
     .exec((err, object) => {
@@ -26,6 +26,24 @@ router.put('/', (req, res) => {
     newObject.save(err => {
         if(err) {return res.status(500).send(err)}
         res.status(200).send({message: `Succesfully added ${req.body.creatorName}'s Masterpiece}`})
+    });
+});
+
+/* PUT an Update to an Object */
+router.put('/:id', (req, res) => {
+    const {id} = req.params;
+    Object.findByIdAndUpdate(id, req.body, {new: true}, (err, object) => {
+        if(err){return res.status(500).send(err)}
+        res.status(200).send(object);
+    });
+});
+
+/*DELETE an Object */
+router.delete('/:id', (req, res) => {
+    const {id} = req.params;
+    Object.findByIdAndDelete(id, (err, object) => {
+        if(err){return res.status(500).send(err)}
+        res.status(200).send({message: `${object.creatorName}'s Masterpiece Deleted`});
     });
 });
 
