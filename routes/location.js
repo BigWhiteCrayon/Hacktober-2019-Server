@@ -5,10 +5,22 @@ const router = express.Router();
 const Object = require('../models/Object');
 const mongoose = require('mongoose');
 
-router.get('/', (req, res) => {
-    const {body} = req.body;
+mongoose.connect(process.env.MONGODB_URL,  {useNewUrlParser: true});
+const db = mongoose.connection;
+
+/* GET Objects within ~.5 miles of current */
+router.get('/:id', (req, res) => {
+    const { longitude, latitude } = req.body;
+    //should limit to objects within half a mile, kinda big but oh well
+    Object.where('longitude').gte(longitude - .01).lte(longitude - .01)
+    .where('latitude').gte(latitude - .01).lte(latitude - .01)
+    .exec((err, object) => {
+        if(err){return res.status(500).send(err)}
+        res.status(200).send(object);
+    });
 })
 
+/*POST Model to be stored in public folder */
 router.post('/model', async(req, res) =>{
     try{
         if(!req.files){return res.status(500).send({message: 'No File Uploaded'})};
